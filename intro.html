@@ -1,0 +1,299 @@
+<script>
+    const FormExtension = {
+      name: 'Forms',
+      type: 'response',
+      match: ({ trace }) =>
+        trace.type === 'Custom_Form' || trace.payload.name === 'Custom_Form',
+      render: ({ trace, element }) => {
+        const formContainer = document.createElement('div');
+  
+        formContainer.innerHTML = `
+          <style>
+           
+  body {
+  margin: 0;
+  line-height: normal;
+}
+
+:root {
+  /* fonts */
+  --body-16px-regular: "SF Pro Display";
+
+  /* font sizes */
+  --body-16px-regular-size: 16px;
+  --heading-32px-medium-size: 32px;
+
+  /* Colors */
+  --color-for-chatbot-background-dark: #0b0011;
+  --color-for-chatbot-primary-1: #9860e4;
+  --color-for-chatbot-grey-3: #fff;
+  --color-for-chatbot-primary-2: #b99cf1;
+}
+  .frame-child,
+.frame-item {
+  position: absolute;
+  filter: blur(122px);
+  border-radius: 50%;
+}
+.frame-child {
+  top: 82px;
+  left: 74px;
+  background-color: var(--color-for-chatbot-primary-2);
+  width: 182px;
+  height: 182px;
+}
+.frame-item {
+  top: 0;
+  left: 0;
+  background-color: #fbf28b;
+  width: 128px;
+  height: 128px;
+  z-index: 1;
+}
+.ellipse-parent,
+.image-icon {
+  position: absolute;
+  top: 104px;
+  left: 75px;
+  width: 256px;
+  height: 264px;
+}
+.image-icon {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+.frame-parent {
+  align-self: stretch;
+  height: 403px;
+  position: relative;
+}
+.meet {
+  position: relative;
+  line-height: 40px;
+  font-weight: 500;
+  display: inline-block;
+  min-width: 73px;
+}
+.span {
+  color: var(--color-for-chatbot-grey-3);
+}
+.sundae {
+  flex: 1;
+  position: relative;
+  line-height: 40px;
+  display: inline-block;
+  min-width: 123px;
+  color: #fae44b;
+}
+.title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+.your-own-ai {
+  align-self: stretch;
+  position: relative;
+  line-height: 40px;
+  font-weight: 500;
+}
+.title-parent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 25px;
+  gap: 4px;
+}
+.ask-your-questions {
+  position: relative;
+  font-size: var(--body-16px-regular-size);
+  line-height: 24px;
+}
+.frame-container {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+}
+.background {
+  position: absolute;
+  width: 100%;
+  top: calc(50% - 12px);
+  right: 0;
+  left: 0;
+  filter: blur(69px);
+  border-radius: 12px;
+  background-color: var(--color-for-chatbot-primary-2);
+  height: 24px;
+}
+.plus-icon {
+  width: 16px;
+  position: relative;
+  height: 16px;
+  display: none;
+}
+.button1,
+.button2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.button2 {
+  width: 80px;
+  position: relative;
+  font-size: var(--body-16px-regular-size);
+  line-height: 24px;
+  font-weight: 600;
+  font-family: var(--body-16px-regular);
+  color: var(--color-for-chatbot-grey-3);
+  text-align: center;
+}
+.button1 {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 172.5px);
+  border-radius: 24px;
+  background-color: var(--color-for-chatbot-primary-1);
+  width: 345px;
+  flex-direction: row;
+  padding: 12px 79px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+.button {
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+  align-self: stretch;
+  height: 48px;
+  position: relative;
+}
+.frame-group,
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.frame-group {
+  align-self: stretch;
+  gap: 40px;
+  text-align: center;
+  font-size: var(--heading-32px-medium-size);
+  color: var(--color-for-chatbot-grey-3);
+  font-family: var(--body-16px-regular);
+}
+.onboarding {
+  width: 393px;
+  border-radius: 30px;
+  background-color: var(--color-for-chatbot-background-dark);
+  max-width: 100%;
+  overflow: hidden;
+  padding: 77px 24px 80px;
+  box-sizing: border-box;
+  gap: 56px;
+  line-height: normal;
+  letter-spacing: normal;
+}
+
+  
+            </style>
+  
+  
+   <div class="onboarding">
+      <section class="frame-parent">
+        <div class="ellipse-parent">
+          <div class="frame-child"></div>
+          <div class="frame-item"></div>
+        </div>
+        <img
+          class="image-icon"
+          loading="lazy"
+          alt=""
+          src="./public/image@2x.png"
+        />
+      </section>
+      <section class="frame-group">
+        <div class="frame-container">
+          <div class="title-parent">
+            <div class="title">
+              <div class="meet">Meet</div>
+              <b class="sundae">
+                <span>Sundae</span>
+                <span class="span">!</span>
+              </b>
+            </div>
+            <div class="your-own-ai">Your own AI assistant</div>
+          </div>
+          <div class="ask-your-questions">
+            Ask your questions and receive articles using artificial
+            intelligence assistant
+          </div>
+        </div>
+        <button class="button">
+          <div class="background"></div>
+          <div class="button1">
+            <img class="plus-icon" alt="" src="./public/plus.svg" />
+
+            <div class="button2">Get started</div>
+            <img class="plus-icon" alt="" src="./public/plus.svg" />
+          </div>
+        </button>
+      </section>
+    </div>
+            `;
+  
+        element.appendChild(formContainer);
+  
+        // Selecting elements for functionality
+        const seats = formContainer.querySelectorAll('.row .seat:not(.occupied)');
+        const selectedMovie = 55;
+        const count = formContainer.querySelector('#count');
+        const total = formContainer.querySelector('#total');
+  
+        let ticketPrice = +selectedMovie;
+  
+        // Functions to update seat count and total price
+        function updateCount() {
+          const selectedSeats = formContainer.querySelectorAll('.row .seat.selected');
+          count.innerText = selectedSeats.length;
+          total.innerText = ticketPrice * selectedSeats.length;
+        }
+  
+        function clearSeats() {
+          const selectedSeats = formContainer.querySelectorAll('.row .seat.selected');
+          selectedSeats.forEach(seat => {
+            seat.classList.remove('selected');
+          });
+          updateCount();
+        }
+  
+        // Seat selection logic
+        seats.forEach(seat => {
+          seat.addEventListener('click', () => {
+            seat.classList.toggle('selected');
+            updateCount();
+          });
+        });
+  
+        // Movie selection logic
+        selectedMovie.addEventListener('change', () => {
+          clearSeats();
+          ticketPrice = +selectedMovie;
+          updateCount();
+        });
+      },
+    };
+  </script>
+  
+  

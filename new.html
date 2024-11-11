@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+
+
+
+
+
+
+    <div id="voiceflow-chat" style="width: 100%; height: 600px;"></div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script type="module">
+      const HVACServiceBookingExtension = {
+        name: 'HVACServiceBooking',
+        type: 'response',
+        match: ({ trace }) =>
+          trace.type === 'ext_hvacServiceBooking' ||
+          trace.payload.name === 'ext_hvacServiceBooking',
+        render: ({ trace, element }) => {
+          const formContainer = document.createElement('div');
+          const receivedText = trace.payload.text || 'No text received';
+          const additionalData = trace.payload.type || {};
+
+          formContainer.innerHTML = `
+            <style>
+              .hvac-form-container {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background: linear-gradient(to bottom right, #f0f4ff, #f8f0ff);
+              }
+              .form-title {
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                color: #3b82f6;
+                margin-bottom: 20px;
+              }
+              .form-group {
+                margin-bottom: 20px;
+              }
+              .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #4b5563;
+              }
+              .service-options {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+              }
+              .service-option {
+                padding: 10px;
+                border: 2px solid #e5e7eb;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+              }
+              .service-option.selected {
+                border-color: #3b82f6;
+                background-color: #eff6ff;
+              }
+              .service-option-title {
+                font-weight: bold;
+                color: #1f2937;
+              }
+              .service-option-description {
+                font-size: 14px;
+                color: #6b7280;
+              }
+              .service-option-price {
+                font-weight: bold;
+                color: #3b82f6;
+                margin-top: 5px;
+              }
+              input[type="text"], input[type="email"], textarea {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                font-size: 16px;
+              }
+              input[type="date"] {
+                width: 100%;
+                padding: 8px 8px 8px 40px;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                font-size: 16px;
+                background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%239CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>') no-repeat 10px center;
+                background-size: 20px;
+              }
+              .submit-btn {
+                width: 100%;
+                padding: 10px;
+                background-color: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 18px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+              }
+              .submit-btn:hover {
+                background-color: #2563eb;
+              }
+            </style>
+            <div class="hvac-form-container">
+              <div class="form-title">Book Your HVAC Service</div>
+              <form id="hvac-form">
+                <div class="form-group">
+                  <label>Choose your service</label>
+                  <div class="service-options">
+                    <div class="service-option" data-id="1">
+                      <div class="service-option-title">Air Duct Cleaning</div>
+                      <div class="service-option-description">Comprehensive cleaning of your HVAC air ducts</div>
+                      <div class="service-option-price">$299</div>
+                    </div>
+                    <div class="service-option" data-id="2">
+                      <div class="service-option-title">Smart Thermostat Installation</div>
+                      <div class="service-option-description">Upgrade to an energy-efficient smart thermostat</div>
+                      <div class="service-option-price">$199</div>
+                    </div>
+                    <div class="service-option" data-id="3">
+                      <div class="service-option-title">Annual HVAC Maintenance</div>
+                      <div class="service-option-description">Complete system check-up and tune-up</div>
+                      <div class="service-option-price">$149</div>
+                    </div>
+                    <div class="service-option" data-id="4">
+                      <div class="service-option-title">Emergency Repair</div>
+                      <div class="service-option-description">24/7 emergency HVAC repair service</div>
+                      <div class="service-option-price">$399</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="date">Choose date</label>
+                  <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="name">Full Name</label>
+                  <input type="text" id="name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea id="description" rows="4" placeholder="Please provide any additional details about your service request."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Book Service</button>
+              </form>
+              ${additionalData}
+            </div>
+            ${receivedText}
+          `;
+    
+          element.appendChild(formContainer);
+    
+          // Handle service selection
+          const serviceOptions = formContainer.querySelectorAll('.service-option');
+          serviceOptions.forEach(option => {
+            option.addEventListener('click', () => {
+              serviceOptions.forEach(opt => opt.classList.remove('selected'));
+              option.classList.add('selected');
+            });
+          });
+    
+          // Handle form submission
+          const form = formContainer.querySelector('#hvac-form');
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const selectedService = formContainer.querySelector('.service-option.selected');
+            const date = formContainer.querySelector('#date').value;
+            const name = formContainer.querySelector('#name').value;
+            const email = formContainer.querySelector('#email').value;
+            const description = formContainer.querySelector('#description').value;
+    
+            if (selectedService && date && name && email) {
+              const serviceId = selectedService.dataset.id;
+              const serviceTitle = selectedService.querySelector('.service-option-title').textContent;
+              const servicePrice = selectedService.querySelector('.service-option-price').textContent;
+    
+              window.voiceflow.chat.interact({
+                type: 'complete',
+                payload: { 
+                  serviceId,
+                  serviceTitle,
+                  servicePrice,
+                  date,
+                  name,
+                  email,
+                  description
+                }
+              });
+            } else {
+              alert('Please fill out all required fields');
+            }
+          });
+        },
+      };
+    
+      (function (d, t) {
+        var v = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+        v.onload = function () {
+          window.voiceflow.chat.load({
+            verify: { projectID: '671b3980995d2d11115a52b1' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            render: {
+              mode: 'embedded',
+              target: document.getElementById('voiceflow-chat')
+            },
+            assistant: {
+              stylesheet: `
+                .vfrc-message--extension-HVACServiceBooking {
+                  background-color: transparent !important;
+                  padding: 0 !important;
+                }
+              `,
+              extensions: [HVACServiceBookingExtension],
+            },
+          });
+        };
+        v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
+        v.type = 'text/javascript';
+        s.parentNode.insertBefore(v, s);
+      })(document, 'script');
+    </script>
+
+
+
+</body>
+</html>

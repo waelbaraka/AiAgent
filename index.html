@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Agent</title>
+    <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=SF Pro Display:wght@400;500;600;700&display=swap"
+  />
+</head>
+
+
+
+<!-- Tickets -->
+<script>
+  const Tickets = {
+    name: 'Tickets',
+    type: 'response',
+    match: ({ trace }) =>
+      trace.type === 'Tickets_List' || trace.payload.name === 'Tickets_List',
+    render: ({ trace, element }) => {
+      const formContainer = document.createElement('div');
+      const selectedTimeString = trace.payload.selectedTimeString || "7:30 PM";
+      const movieName = trace.payload.movieName || "Movie Title";
+      const seatCount = trace.payload.seatCount || "15A";
+
+      const gigsHTML = `
+      <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef5f8;
+            color: #333;
+            padding: 20px;
+        }
+
+        .ticket {
+            background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
+            border: 1px solid #c1d5e0;
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 380px;
+            margin: 20px auto;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .ticket h1 {
+            font-size: 24px;
+            color: #00796b; /* Primary header color */
+            margin-bottom: 15px;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px 0;
+        }
+
+        .left {
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border-right: 1px dashed #a3c2ca;
+        }
+
+        .left p:first-child {
+            font-size: 32px;
+            color: #00796b;
+        }
+
+        .left p:last-child {
+            font-size: 16px;
+            color: #4f9a94;
+            margin-top: 5px;
+        }
+
+        .right {
+            text-align: left;
+            padding: 10px;
+            flex-grow: 1;
+        }
+
+        .right h2 {
+            font-size: 18px;
+            color: #444;
+            margin: 5px 0;
+        }
+
+        .right p {
+            font-size: 14px;
+            color: #666;
+            margin: 4px 0;
+        }
+
+        .right a {
+            display: inline-block;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #00796b; /* Button color */
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .right a:hover {
+            background-color: #004d40;
+            transform: translateY(-2px);
+        }
+      </style>
+      
+      <div class="ticket">
+        <h1>${movieName}</h1>
+        <div class="container">
+            <section class="left">
+                <p>${selectedTimeString}</p>
+                <p>Date</p>
+            </section>
+            <section class="right">
+                <p>Seat Number</p>
+                <h2>${seatCount}</h2>
+                <a href="#">Get Tickets</a>
+            </section>
+        </div>
+      </div>
+      `;
+  
+      formContainer.innerHTML = gigsHTML;
+      element.appendChild(formContainer);
+    },
+  };
+</script>
+
+
+
+<!-- SeatsSelction -->
+
+<script>
+    const SeatsSelction = {
+      name: 'SeatsSelction',
+      type: 'response',
+      match: ({ trace }) =>
+        trace.type === 'seats' || trace.payload.name === 'seats',
+      render: ({ trace, element }) => {
+        const formContainer = document.createElement('div');
+
+        formContainer.innerHTML = `
+        <style>
+    
+
+body {
+  background-color: #242333;
+  color: #fff;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: 'Lato', sans-serif;
+  margin: 0;
+}
+/* changes flex-direction from default of row to a column 
+.movie-container {
+  margin: 20px 0; /* top/bottom left/right */
+}
+*/
+
+.movie-container select { /* we are styling the select tag dropdown so it appears the same across browsers! */
+  background-color: #fff;
+  border: 0;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 10px;
+  padding: 5px 15px 5px 15px; /* top right bottom left */
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  /* appearance (-moz-appearance, -webkit-appearance) - The appearance CSS property is used to display an element using platform-native styling, based on the operating system's theme. The -moz-appearance and -webkit-appearance properties are non-standard versions of this property, used (respectively) by Gecko (Firefox) and by WebKit-based (e.g., Safari) and Blink-based (e.g., Chrome, Opera) browsers to achieve the same thing. Note that Firefox and Edge also support -webkit-appearance, for compatibility reasons. */
+}
+
+.container { /* contains the screen div and all row divs together */
+  perspective: 1000px; /* gives tilted effect to screen */
+  margin-bottom: 60px; /* 30 separates bottom of container from p text beneath it */
+  background-color: #242333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5%;
+
+            }
+
+.seat {
+  background-color: #444451;
+  height: 12px;
+  width: 15px;
+  margin: 3px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.seat.selected {
+  background-color: #6feaf6;
+}
+
+.seat.occupied {
+  background-color: #fff;
+}
+
+/* Set 2 aisles up and down on each side of 'theater'. */
+
+.seat:nth-of-type(2) {
+  margin-right: 18px;
+}
+.seat:nth-last-of-type(2) { /* counts two in from the last of type */
+  margin-left: 18px;
+}
+
+.seat:not(.occupied):hover { /* On hover, when seat class does not include class of occupied... */
+  cursor: pointer; /* change cursor to a pointer hand */
+  transform: scale(1.2); /* scales seat to larger size on hover */
+}
+
+.showcase .seat:not(.occupied):hover { /* On hover, when seat class does not include class of occupied WITHIN THE SHOWCASE DIV... */
+  cursor: default; /* specifies not to change cursor on these .seats */
+  transform: scale(1); /* specifies not to transform these .seats */
+}
+
+.showcase {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #777;
+  list-style-type: none; /* get rid of bullet-points */
+  display: flex;
+  justify-content: space-between; 
+}
+
+/* justify-content: space-between:
+The items are evenly distributed within the alignment container along the main axis. The spacing between each pair of adjacent items is the same. The first item is flush with the main-start edge, and the last item is flush with the main-end edge. */
+
+.showcase li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.showcase li small {
+  
+  font-size: 12px; /* Adjust size as needed */
+  color: #666; /* Optional: change color for better readability */
+width: fit-content ;
+}
+
+.row {
+  display: flex; /* horizontally aligns the seat divs of each row */
+}
+
+.screen {
+  background-color: #fff;
+  height: 70px;
+  width: 80%;
+  margin: 15px 0;
+  transform: rotateX(-45deg);
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.7); /* white blur effect of light coming off screen */
+}
+
+p.text {
+  margin: 5px 0;
+}
+
+p.text span {
+  color: #242333; /* gives seat and price number spans a blue color for emphasis */
+}
+        
+        /* Centering the checkout button */
+.checkout-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Checkout button styling */
+.checkout-button {
+    background-color: #ff4757;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.checkout-button:hover {
+    background-color: #ff6b81;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.checkout-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+        
+            </style>
+            
+            <body>
+                <!-- short-hand is .seat*8 and the enter key
+//   <div class="movie-container">
+//     <label for="">Pick a movie:</label>
+//     <select id="movie">
+//       <option value="10">Godzilla vs Kong ($10)</option>
+//       <option value="12">The Many Saints of Newark ($12)</option>
+//       <option value="8">Toy Story 4 ($8)</option>
+//       <option value="9">The Lion King ($9)</option>
+//     </select>
+//   </div>
+-->
+
+  <ul class="showcase">
+    <li>
+      <div class="seat tect-size"></div>
+      <small>N/A</small>
+    </li>
+    <li>
+      <div class="seat selected"></div>
+      <small>Selected</small>
+    </li>
+    <li>
+      <div class="seat occupied"></div>
+      <small>Occupied</small>
+    </li>
+  </ul>
+  
+  <div class="container">
+    <div class="screen"></div>
+
+    <div class="row">
+      <div class="seat"></div> <!-- short-hand is .seat*8 and the enter key-->
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+    </div>
+    <div class="row">
+      <div class="seat"></div> <!-- short-hand is .seat*8 and the enter key-->
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat occupied"></div>
+      <div class="seat occupied"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+    </div>
+    <div class="row">
+      <div class="seat"></div> <!-- short-hand is .seat*8 and the enter key-->
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat occupied"></div>
+      <div class="seat occupied"></div>
+    </div>
+    <div class="row">
+      <div class="seat"></div> <!-- short-hand is .seat*8 and the enter key-->
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+    </div>
+    <div class="row">
+      <div class="seat"></div> <!-- short-hand is .seat*8 and the enter key-->
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat occupied"></div>
+      <div class="seat occupied"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+    </div>
+    <div class="row">
+      <div class="seat"></div> <!-- short-hand is .seat*8 and the enter key-->
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat"></div>
+      <div class="seat occupied"></div>
+      <div class="seat occupied"></div>
+      <div class="seat occupied"></div>
+      <div class="seat"></div>
+    </div>
+  </div>
+
+  <p class="text">You have selected <span id="count">0</span> seats for a price of $<span id="total">0</span></p>
+<div class="checkout-container">
+    <button class="checkout-button">Checkout</button>
+</div>
+
+</body>
+</html>
+            `         
+
+           
+
+        element.appendChild(formContainer);
+  
+        // Selecting elements for functionality
+        const seats = formContainer.querySelectorAll('.row .seat:not(.occupied)');
+        const selectedMovie = 55;
+        const count = formContainer.querySelector('#count');
+        const total = formContainer.querySelector('#total');
+  
+        let ticketPrice = +selectedMovie;
+  
+        // Functions to update seat count and total price
+        function updateCount() {
+          const selectedSeats = formContainer.querySelectorAll('.row .seat.selected');
+          count.innerText = selectedSeats.length;
+          total.innerText = ticketPrice * selectedSeats.length;
+        }
+  
+        function clearSeats() {
+          const selectedSeats = formContainer.querySelectorAll('.row .seat.selected');
+          selectedSeats.forEach(seat => {
+            seat.classList.remove('selected');
+          });
+          updateCount();
+        }
+  
+        // Seat selection logic
+        seats.forEach(seat => {
+          seat.addEventListener('click', () => {
+            seat.classList.toggle('selected');
+            updateCount();
+          });
+        });
+  // Checkout button functionality
+        const checkoutButton = formContainer.querySelector('.checkout-button');
+        checkoutButton.addEventListener('click', () => {
+            const selectedSeats = formContainer.querySelectorAll('.row .seat.selected').length;
+            const totalPrice = ticketPrice * selectedSeats;
+
+            if (selectedSeats === 0) {
+                alert("Please select at least one seat to proceed to checkout.");
+                return;
+            }
+
+            // Send data to Voiceflow chat or another part of the app
+            window.voiceflow.chat.interact({
+                type: 'checkout',
+                payload: {
+                    seatCount: selectedSeats,
+                    totalPrice: totalPrice,
+                }
+            });
+        });
+
+        // Movie selection logic
+        // selectedMovie.addEventListener('change', () => {
+        //   clearSeats();
+        //   ticketPrice = +selectedMovie;
+        //   updateCount();
+        // });
+
+      },
+    };
+  </script>
+  
+  
+
+<!-- MovieTime -->
+
+<script>
+    const MovieTime = {
+      name: 'movietime',
+      type: 'response',
+      match: ({ trace }) =>
+        trace.type === 'movietime' || trace.payload.name === 'movietime',
+      render: ({ trace, element }) => {
+        const formContainer = document.createElement('div');
+  
+        // Get data from trace payload and set default values if necessary
+        const img = trace.payload.img || "https://example.com/default-image.jpg";
+        const movieTitle = trace.payload.movieName || "Unknown Movie";
+        const durationMinutes = trace.payload.durationMinutes || 120;
+        const convertedTimes = trace.payload.convertedTimes || ""; // Expecting a comma-separated string
+  
+        // Convert convertedTimes string into an array of showtimes
+        const showtimeArray = convertedTimes ? convertedTimes.split(",") : [];
+  
+        // Set up running time and background image
+        const runningTime = `Running Time: ${durationMinutes} minutes`;
+  
+        // HTML structure for the movie schedule
+        const showtimesHTML = `
+          <style>
+            .movie-poster {
+              background-image: url('${img}');
+              background-size: cover;
+              background-position: center;
+              border-radius: 10px;
+              padding: 20px;
+              color: #fff;
+              text-align: center;
+              width: 100%;
+              max-width: 400px;
+              margin: 0 auto;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+              position: relative;
+            }
+            
+            .movie-poster h1 {
+              font-size: 28px;
+              margin-bottom: 10px;
+            }
+            
+            .running-time {
+              font-size: 16px;
+              margin-bottom: 15px;
+            }
+  
+            .showtimes {
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: center;
+              margin-top: 15px;
+            }
+            
+            .showtime-button {
+              background-color: #ff4757;
+              color: #fff;
+              border: none;
+              border-radius: 4px;
+              padding: 10px 15px;
+              font-size: 14px;
+              margin: 5px;
+              cursor: pointer;
+              transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            }
+  
+            .showtime-button:hover {
+              background-color: #ff6b81;
+              transform: scale(1.05);
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            }
+            
+            .showtime-button.selected {
+              background-color: #28a745;
+            }
+          </style>
+  
+          <div class="movie-poster">
+            <h1>${movieTitle}</h1>
+            <p class="running-time">${runningTime}</p>
+            <h2>Select a Showtime:</h2>
+            <div class="showtimes" id="showtimesContainer"></div>
+          </div>
+        `;
+  
+        // Set inner HTML of the container and add it to the DOM
+        formContainer.innerHTML = showtimesHTML;
+        element.appendChild(formContainer);
+  
+        // Get the container for showtime buttons
+        const showtimesContainer = formContainer.querySelector('#showtimesContainer');
+  
+        // Function to handle showtime button selection
+        function handleShowtimeSelection(button) {
+          // Deselect all buttons
+          showtimesContainer.querySelectorAll('.showtime-button').forEach(btn => btn.classList.remove('selected'));
+          // Select the clicked button
+          button.classList.add('selected');
+  
+          // Log or handle the selected time (this can be updated based on your actual requirements)
+          console.log(`Selected Showtime: ${button.textContent}`);
+          window.voiceflow.chat.interact({
+            type: 'selectedTime',
+            payload: {
+              selectedTime: button.textContent.trim() // Sends selected time
+            }
+          });
+        }
+  
+        // Create buttons for each showtime in showtimeArray
+        showtimeArray.forEach(time => {
+          const button = document.createElement('button');
+          button.classList.add('showtime-button');
+          button.textContent = time.trim(); // Set button text to current time
+          button.addEventListener('click', () => handleShowtimeSelection(button)); // Add click event listener
+          showtimesContainer.appendChild(button); // Add button to container
+        });
+      }
+    };
+  </script>
+  
+
+
+<!-- TheaterSelection -->
+
+<script>
+  const TheaterSelection = {
+    name: 'TheaterSelection',
+    type: 'response',
+    match: ({ trace }) =>
+      trace.type === 'theater_selection' || trace.payload.name === 'theater_selection',
+    render: ({ trace, element }) => {
+      const formContainer = document.createElement('div');
+  
+      // Sample list of theaters
+      const theaters = [
+          { name: "AMC The Grove 14", id: "QDOf6yimbT0qHpn" },
+          { name: "Cinépolis Luxury Cinemas", id: "DGbfBrfVnFb2UDw" },
+          { name: "Regal Edwards", id: "80bClRfwJiNjhMv" },
+          { name: "Cinemark Baldwin", id: "bJ9faWfljCM9cBg" },
+          { name: "Harkins Cerritos", id: "QDOf6yimbT0qHpn" }
+      ];
+  
+
+      // HTML structure for the theater selection
+      const theatersHTML = `
+      <div class="theater-selection">
+              <h1 class="animated-title">Select a Theater</h1>
+              <div class="theaters" id="theaterButtons">
+                  ${theaters.map(theater => `<button class="theater-button" data-id="${theater.id}">${theater.name}</button>`).join('')}
+              </div>
+              <div class="payload-info"></div>
+          </div>
+  <style>
+  /* Container for the theater selection */
+  .theater-selection {
+      background: url('https://img.freepik.com/premium-vector/open-theater-blue-curtains-with-light-seats_165488-1650.jpg') center center/cover no-repeat; /* Replace with your image URL */
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      width: 100%;
+      max-width: 450px;
+      margin: 0 auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Softer shadow */
+      position: relative;
+  }
+  
+  /* Animation for the heading */
+  .animated-title {
+      font-size: 28px;
+      margin-bottom: 25px;
+      color: #f0f0f0; /* Light gray for better contrast */
+      font-family: 'Poppins', sans-serif; /* Modern and clean font */
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      animation: fadeSlideUp 1s ease-in-out forwards;
+      opacity: 0; /* Initial state for animation */
+  }
+  
+  /* Keyframe animation for fade in and slide up */
+  @keyframes fadeSlideUp {
+      0% {
+          opacity: 0;
+          transform: translateY(20px) scale(0.8); /* Slightly down and scaled */
+      }
+      100% {
+          opacity: 1;
+          transform: translateY(0) scale(1); /* Final position */
+      }
+  }
+  
+  /* Theater button container */
+  .theaters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px; /* Space between buttons */
+  }
+  
+  /* Styling for theater buttons */
+  .theater-button {
+      background: #00d2ff; /* Bright cyan */
+      background: linear-gradient(45deg, #00d2ff, #3a7bd5); /* Gradient for depth */
+      color: #ffffff;
+      border: none;
+      border-radius: 30px; /* Softly rounded corners */
+      padding: 12px 25px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease; /* Smooth transitions */
+      font-family: 'Poppins', sans-serif; /* Clean modern font */
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+      position: relative;
+      z-index: 1;
+  }
+  
+  .theater-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 30px;
+      background: #ffffff;
+      z-index: -1;
+      transition: transform 0.4s ease;
+      transform: scaleX(0); /* Hidden initially */
+      transform-origin: left;
+  }
+  
+  .theater-button:hover::before {
+      transform: scaleX(1); /* Reveal background on hover */
+  }
+  
+  .theater-button:hover {
+      color: #000000;
+      transform: scale(1.05); /* Scale up slightly on hover */
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); /* More shadow when hovered */
+  }
+  
+  .theater-button.selected {
+      background-color: #28a745; /* Green for selected button */
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.5); /* Shadow with green tint */
+  }
+  
+  .theater-button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.5); /* Cyan focus ring */
+  }
+  </style>
+  
+      `;
+  
+      formContainer.innerHTML = theatersHTML;
+
+// Append the container to the provided element
+element.appendChild(formContainer);
+
+// Add event listeners for the theater buttons
+const buttons = formContainer.querySelectorAll('.theater-button');
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+      // Remove the selected class from all buttons
+      buttons.forEach(btn => btn.classList.remove('selected'));
+
+      // Add the selected class to the clicked button
+      button.classList.add('selected');
+
+      const selectedTheater = button.textContent;
+      const selectedTheaterId = button.dataset.id; // Retrieve the ID
+
+      console.log( selectedTheaterId);
+
+      // Send data back to Voiceflow
+      window.voiceflow.chat.interact({
+          type: 'movie_selection', // Updated to match your requirement
+          payload: {
+              selectedTheater: selectedTheater,
+              selectedTheaterId: selectedTheaterId // Send the ID too
+          }
+      });
+  });
+});
+}
+};;
+  
+
+ 
+
+</script>
+
+
+<body>
+  <a href="travel_agent.html" target='_blank' style="color: blue; text-decoration: none; font-weight: bold;">Book Your Trip</a>
+  <a href="voice.html" target='_blank'  style="color: blue; text-decoration: none; font-weight: bold;" >Voice Agent</a>
+
+
+  <script type="text/javascript">
+    (function(d, t) {
+        var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+        v.onload = function() {
+          window.voiceflow.chat.load({
+            verify: { projectID: '6732828aa484de9f75453376' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            assistant: {
+                      stylesheet: "./stylesheet.css",
+                      extensions: [
+                      TheaterSelection,
+                      MovieTime,
+                      SeatsSelction,
+                      Tickets
+                      
+                    ]
+                    }
+          });
+        }
+        v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+    })(document, 'script');
+  </script>
+  
+  
+</body>
+</html>

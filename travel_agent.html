@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Agent</title>
+    <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=SF Pro Display:wght@400;500;600;700&display=swap"
+  />
+</head>
+
+<script type="text/javascript">
+  (function(d, t) {
+      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+      v.onload = function() {
+        window.voiceflow.chat.load({
+          verify: { projectID: '6732829dc386d860d2971f44' },
+          url: 'https://general-runtime.voiceflow.com',
+          versionID: 'production',
+          assistant: {
+                    extensions: [
+                    tour_selection
+                  ]
+                  }
+        });
+      }
+      v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+  })(document, 'script');
+</script>
+
+
+
+<script>
+  const tour_selection = {
+    name: 'tour_selection',
+    type: 'response',
+    match: ({ trace }) =>
+      trace.type === 'tour_selection' || trace.payload.name === 'tour_selection',
+    render: ({ trace, element }) => {
+      const formContainer = document.createElement('div');
+      const tour_data = trace.payload.tour_data;
+      const variable_name = trace.payload.variable_name;
+      console.log(tour_data);
+      console.log(variable_name);
+
+      // HTML structure for the tour booking form
+      const tourHTML = `
+        <div class="container">
+          <h1>Book Your Tour</h1>
+          <form id="bookingForm" class="booking-form">
+            <div class="form-group">
+              <label for="fullName">Full Name (required)</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address (required)</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+              <label for="mobile">Mobile Number (required)</label>
+              <input type="tel" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
+            </div>
+            <div class="form-group">
+              <label for="adults">Adults (Age above 16)</label>
+              <input type="number" id="adults" name="adults" min="0" placeholder="Enter number of adults">
+            </div>
+            <div class="form-group">
+              <label for="children">Children (Age 2-15)</label>
+              <input type="number" id="children" name="children" min="0" placeholder="Enter number of children">
+            </div>
+            <div class="form-group">
+              <label for="infant">Infant (Age below 2)</label>
+              <input type="number" id="infant" name="infant" min="0" placeholder="Enter number of infants">
+            </div>
+            <div class="form-group">
+              <label for="departureDate">Departure Date</label>
+              <input type="date" id="departureDate" name="departureDate" required>
+            </div>
+            <div class="form-group">
+              <label for="specialInstructions">Special Instructions</label>
+              <textarea id="specialInstructions" name="specialInstructions" placeholder="Enter any special instructions"></textarea>
+            </div>
+            <button type="button" id="submit-btn" class="submit-btn">Book Now</button>
+          </form>
+        </div>
+        <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Container styles */
+.container {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  margin: 20px;
+}
+
+/* Heading styles */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+  color: #2c3e50;
+}
+
+/* Form styles */
+.booking-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 1em;
+  color: #555;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+input[type="number"],
+input[type="tel"] {
+}
+
+button {
+  background-color: #27ae60;
+  color: white;
+  font-size: 1.2em;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2ecc71;
+}
+
+/* Placeholder styles */
+input::placeholder,
+textarea::placeholder {
+  color: #aaa;
+}
+
+/* Form alignment */
+button[type="submit"] {
+  margin-top: 20px;
+}
+    </style>  
+      `;
+
+      formContainer.innerHTML = tourHTML;
+
+      // Append the form container to the element
+      element.appendChild(formContainer);
+
+      // Add the event listener for the "Book Now" button
+      const submitButton = formContainer.querySelector('#submit-btn');
+      submitButton.addEventListener('click', function(event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Collect all the form data with checks to make sure elements exist
+        const fullName = document.getElementById('fullName') ? document.getElementById('fullName').value : '';
+        const email = document.getElementById('email') ? document.getElementById('email').value : '';
+        const mobile = document.getElementById('mobile') ? document.getElementById('mobile').value : '';
+        const adults = document.getElementById('adults') ? document.getElementById('adults').value : '';
+        const children = document.getElementById('children') ? document.getElementById('children').value : '';
+        const infant = document.getElementById('infant') ? document.getElementById('infant').value : '';
+        const departureDate = document.getElementById('departureDate') ? document.getElementById('departureDate').value : '';
+        const specialInstructions = document.getElementById('specialInstructions') ? document.getElementById('specialInstructions').value : '';
+
+        // Log the collected data for debugging
+        console.log({
+          fullName,
+          email,
+          mobile,
+          adults,
+          children,
+          infant,
+          departureDate,
+          specialInstructions
+        });
+
+        // Send the form data back to Voiceflow or handle it further
+        window.voiceflow.chat.interact({
+          type: 'tour_booking', // Define a custom type for this interaction
+          payload: {
+            fullName,
+            email,
+            mobile,
+            adults,
+            children,
+            infant,
+            departureDate,
+            specialInstructions
+          }
+        });
+
+        // Optionally, show a success message or do other actions after submission
+      });
+    }
+  };
+</script>
+
+
+
+<body>
+    
+
+  <a href="travel_agent.html" style="color: blue; text-decoration: none; font-weight: bold;">Book Your Trip</a>
+
+</body>
+</html>

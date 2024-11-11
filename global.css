@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  line-height: normal;
+}
+
+:root {
+  /* fonts */
+  --body-16px-regular: "SF Pro Display";
+
+  /* font sizes */
+  --body-16px-regular-size: 16px;
+  --heading-32px-medium-size: 32px;
+
+  /* Colors */
+  --color-for-chatbot-background-dark: #0b0011;
+  --color-for-chatbot-primary-1: #9860e4;
+  --color-for-chatbot-grey-3: #fff;
+  --color-for-chatbot-primary-2: #b99cf1;
+}

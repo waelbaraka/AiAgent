@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="styles.css">  -->
+    <title>Document</title>
+</head>
+
+
+<script>
+    const TheaterSelection = {
+        name: 'TheaterSelection',
+        type: 'response',
+        match: ({ trace }) => trace.type === 'theater_selection' || trace.payload?.name === 'theater_selection',
+        render: ({ trace, element }) => {
+            const formContainer = document.createElement('div');
+    
+            // Get values from trace payload
+            const test = trace.payload.test || { buttons: [] };
+            const maxChunkSize = trace.payload.maxChunkSize || 'No text received';
+            const theaterNames = test.buttons.map(button => button.name).slice(0, 5); // Changed to slice 0, 5 for 5 theaters
+    
+            const theatersHTML = `
+                <div class="theater-selection">
+                    <h1 class="animated-title">Select a Theater</h1>
+                    <div class="theaters" id="theaterButtons"> <!-- Added id for button container -->
+                    </div>
+                    <div class="payload-info">
+                    </div>
+                </div>
+    
+                <style>
+                    .theater-selection {
+                        background: url('https://img.freepik.com/premium-vector/open-theater-blue-curtains-with-light-seats_165488-1650.jpg') center center/cover no-repeat;
+                        border-radius: 15px;
+                        padding: 30px;
+                        text-align: center;
+                        width: 100%;
+                        max-width: 450px;
+                        margin: 0 auto;
+                        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+                        position: relative;
+                    }
+    
+                    .animated-title {
+                        font-size: 28px;
+                        margin-bottom: 25px;
+                        color: #f0f0f0;
+                        font-family: 'Poppins', sans-serif;
+                        letter-spacing: 1px;
+                        text-transform: uppercase;
+                        animation: fadeSlideUp 1s ease-in-out forwards;
+                        opacity: 0;
+                    }
+    
+                    @keyframes fadeSlideUp {
+                        0% {
+                            opacity: 0;
+                            transform: translateY(20px) scale(0.8);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+    
+                    .theaters {
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                        gap: 10px;
+                    }
+    
+                    .theater-button {
+                        background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+                        color: #ffffff;
+                        border: none;
+                        border-radius: 30px;
+                        padding: 12px 25px;
+                        font-size: 16px;
+                        margin: 5px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        font-family: 'Poppins', sans-serif;
+                        text-transform: uppercase;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        position: relative;
+                        z-index: 1;
+                    }
+    
+                    .theater-button:hover {
+                        transform: scale(1.05);
+                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                    }
+    
+                    .theater-button.selected {
+                        background: linear-gradient(45deg, #28a745, #218838);
+                    }
+    
+                    .payload-info {
+                        margin-top: 20px;
+                        color: #f0f0f0;
+                        font-family: 'Poppins', sans-serif;
+                    }
+                </style>
+            `;
+    
+            formContainer.innerHTML = theatersHTML;
+            element.appendChild(formContainer);
+    
+            // Select the div for dynamic buttons
+            const theaterButtonsContainer = formContainer.querySelector("#theaterButtons"); // Use querySelector instead of getElementById
+    
+            // Create buttons for each theater name and append to the buttons container
+            theaterNames.forEach(theater => {
+                const button = document.createElement("button");
+                button.className = "theater-button"; // Add button class
+                button.innerText = theater; // Set button text
+                // Add event listener for button click
+                button.onclick = () => {
+                    console.log(`Selected theater: ${theater}`);
+                };
+                theaterButtonsContainer.appendChild(button); // Append button to container
+            });
+    
+            // Add event listeners to buttons for selection handling
+            const buttons = formContainer.querySelectorAll('.theater-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove selection from all buttons
+                    buttons.forEach(btn => btn.classList.remove('selected'));
+                    // Add selection to clicked button
+                    button.classList.add('selected');
+    
+                    const selectedTheater = button.textContent;
+    
+                    // Send data back to Voiceflow
+                    window.voiceflow.chat.interact({
+                        type: 'theater_selection',
+                        payload: {
+                            selectedTheater: selectedTheater,
+                            test: test,
+                            maxChunkSize: maxChunkSize
+                        }
+                    });
+                });
+            });
+        }
+    };
+    
+    // Register the component
+    if (window.voiceflow) {
+        window.voiceflow.chat.registerComponent(TheaterSelection);
+    }
+    </script>
+    
+
+
+  
+<script type="text/javascript">
+  (function(d, t) {
+      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+      v.onload = function() {
+        window.voiceflow.chat.load({
+          verify: { projectID: '671aacee9e8e16f7e6cb68ee' },
+          url: 'https://general-runtime.voiceflow.com',
+          versionID: 'production',
+                  assistant: {
+                    extensions: [TheaterSelection]
+                  }
+        });
+      }
+      v.src = "https://cdn.voiceflow.com/widget/bundle.mjs"; v.type = "text/javascript"; s.parentNode.insertBefore(v, s);
+  })(document, 'script');
+</script>
+
+<body>
+    
+</body>
+</html>

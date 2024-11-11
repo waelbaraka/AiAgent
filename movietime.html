@@ -1,0 +1,218 @@
+<script>
+
+    const FormExtension = {
+      name: 'Forms',
+      type: 'response',
+      match: ({ trace }) =>
+        trace.type === 'Custom_Form' || trace.payload.name === 'Custom_Form',
+      render: ({ trace, element }) => {
+        const formContainer = document.createElement('div');
+    
+        // Movie title and running time
+        const movieTitle = "Movie Title"; // Replace with dynamic data if needed
+        const runningTime = "Running Time: 120 minutes"; // Replace with dynamic data if needed
+    
+        // HTML structure for the movie schedule
+        const showtimesHTML = `
+        <style>
+          .movie-poster {
+          background-image: url('https://image.tmdb.org/t/p/original/bvYjhsbxOBwpm8xLE5BhdA3a8CZ.jpg.jpg'); /* Add your movie poster image URL */
+          background-size: cover;
+          background-position: center;
+          border-radius: 10px;
+          padding: 20px;
+          color: #fff;
+          text-align: center;
+          width: 100%;
+          max-width: 400px;
+          margin: 0 auto;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+          position: relative;
+          overflow: hidden; /* Ensure buttons don’t overflow */
+      }
+    
+      .movie-poster h1 {
+          font-size: 28px;
+          margin-bottom: 10px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+          animation: fadeIn 1s ease-in-out; /* Animation for the title */
+      }
+    
+      .running-time {
+          font-size: 16px;
+          margin-bottom: 15px;
+          text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+          animation: fadeIn 1.2s ease-in-out; /* Animation for running time */
+      }
+    
+      .showtimes {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-top: 15px; /* Spacing above buttons */
+      }
+    
+      .showtime-button {
+          background-color: #ff4757; /* Bright red */
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          padding: 10px 15px;
+          font-size: 14px;
+          margin: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+          position: relative; /* For animation effect */
+      }
+    
+      .showtime-button:hover {
+          background-color: #ff6b81; /* Lighter red on hover */
+          transform: scale(1.05);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      }
+    
+      .showtime-button.selected {
+          background-color: #28a745; /* Green for selected button */
+      }
+    
+      .showtime-button:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+      }
+    
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+              transform: translateY(-20px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+    
+          </style>
+          <div class="movie-poster">
+              <h1>${movieTitle}</h1>
+              <p class="running-time">${runningTime}</p>
+              <h2>Select a Showtime:</h2>
+              <div class="showtimes">
+                  <button class="showtime-button">10:00 AM</button>
+                  <button class="showtime-button">1:00 PM</button>
+                  <button class="showtime-button">4:00 PM</button>
+                  <button class="showtime-button">7:00 PM</button>
+                  <button class="showtime-button">10:00 PM</button>
+              </div>
+          </div>
+        `;
+    
+        // Set the inner HTML of the container
+        formContainer.innerHTML = showtimesHTML;
+    
+        // Append the container to the provided element
+        element.appendChild(formContainer);
+    
+        // Add event listeners for the showtime buttons
+        const buttons = formContainer.querySelectorAll('.showtime-button');
+        buttons.forEach(button => {
+          button.addEventListener('click', () => {
+            // Remove the selected class from all buttons
+            buttons.forEach(btn => btn.classList.remove('selected'));
+    
+            // Add the selected class to the clicked button
+            button.classList.add('selected');
+    
+            const selectedTime = button.textContent;
+            console.log(`Selected Showtime: ${selectedTime}`);
+          });
+        });
+      },
+    };
+    
+    // CSS for movie poster style with vibrant showtimes
+    const style = document.createElement('style');
+    style.textContent = `
+      .movie-poster {
+          background-image: url('your-movie-poster-image-url.jpg'); /* Add your movie poster image URL */
+          background-size: cover;
+          background-position: center;
+          border-radius: 10px;
+          padding: 20px;
+          color: #fff;
+          text-align: center;
+          width: 100%;
+          max-width: 400px;
+          margin: 0 auto;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+          position: relative;
+          overflow: hidden; /* Ensure buttons don’t overflow */
+      }
+    
+      .movie-poster h1 {
+          font-size: 28px;
+          margin-bottom: 10px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+          animation: fadeIn 1s ease-in-out; /* Animation for the title */
+      }
+    
+      .running-time {
+          font-size: 16px;
+          margin-bottom: 15px;
+          text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+          animation: fadeIn 1.2s ease-in-out; /* Animation for running time */
+      }
+    
+      .showtimes {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-top: 15px; /* Spacing above buttons */
+      }
+    
+      .showtime-button {
+          background-color: #ff4757; /* Bright red */
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          padding: 10px 15px;
+          font-size: 14px;
+          margin: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+          position: relative; /* For animation effect */
+      }
+    
+      .showtime-button:hover {
+          background-color: #ff6b81; /* Lighter red on hover */
+          transform: scale(1.05);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      }
+    
+      .showtime-button.selected {
+          background-color: #28a745; /* Green for selected button */
+      }
+    
+      .showtime-button:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+      }
+    
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+              transform: translateY(-20px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    
+    </script>
+    
+    

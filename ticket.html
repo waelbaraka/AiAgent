@@ -1,0 +1,130 @@
+<script>
+    const FormExtension = {
+      name: 'Forms',
+      type: 'response',
+      match: ({ trace }) =>
+        trace.type === 'Custom_Form' || trace.payload.name === 'Custom_Form',
+      render: ({ trace, element }) => {
+        const formContainer = document.createElement('div');
+    
+        // HTML structure as a string
+        const gigsHTML = `
+        <style>
+          * {
+      box-sizing: border-box;
+      margin: 0;
+  }
+  
+  body {
+      font-family: Century Gothic, sans-serif;
+      background-color: #DADDE6;
+      color: #37383a;
+      padding: 10px;
+  }
+  
+  .ticket {
+      background-color: #fff;
+      border: 2px solid #ff9800;
+      border-radius: 8px;
+      padding: 15px;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
+  }
+  
+  .ticket h1 {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #ff9800; /* Ticket header color */
+  }
+  
+  .container {
+      display: flex;
+      justify-content: space-between;
+  }
+  
+  .left {
+      font-weight: 700;
+      text-align: center;
+      padding: 10px;
+      border-right: 2px dashed #DADDE6; /* Ticket divider */
+  }
+  
+  .left p {
+      margin: 5px 0;
+  }
+  
+  .left p:first-child {
+      font-size: 30px; /* Date size */
+      color: #37383a;
+  }
+  
+  .left p:last-child {
+      font-size: 14px; /* Month size */
+  }
+  
+  .right {
+      padding-left: 10px;
+  }
+  
+  .right h2 {
+      font-size: 16px;
+      margin: 5px 0;
+  }
+  
+  .right p {
+      font-size: 12px;
+      margin: 3px 0;
+  }
+  
+  .right a {
+      display: inline-block;
+      text-decoration: none;
+      color: #fff;
+      background-color: #ff9800;
+      padding: 5px 10px;
+      border-radius: 4px;
+      text-align: center;
+      margin-top: 5px;
+  }
+  
+  .right a:hover {
+      background-color: #e68900; /* Darker on hover */
+  }
+  
+          </style>
+        
+        <div class="ticket">
+      <h1>Upcoming Gigs</h1>
+      
+      <div class="container">
+          <section class="left">
+              <p>23</p>
+              <p>Feb</p>
+          </section>
+          <section class="right">
+              <p>DJ Music Event</p>
+              <h2>Live in Sydney</h2>
+              <p class="calendar">28 Dec 2014, 08:55 PM</p>
+              <p class="map-pin">Nexen Square, Sydney</p>
+              <a href="#">Tickets</a>
+          </section>
+      </div>
+  </div>
+  
+        `;
+    
+        // Set the inner HTML of the form container
+        formContainer.innerHTML = gigsHTML;
+    
+        // Append the form container to the provided element
+        element.appendChild(formContainer);
+      },
+    };
+    
+  </script>
+  
+  
